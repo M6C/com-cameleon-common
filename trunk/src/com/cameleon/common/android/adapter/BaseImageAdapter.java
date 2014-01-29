@@ -13,39 +13,31 @@ public class BaseImageAdapter extends ArrayAdapter<Integer> {
 
 	private Activity context;
 	private int resource;
-	private int textViewResourceId;
+	private int imageViewResourceId;
 	private ViewBinder viewBinder;
 
-	public BaseImageAdapter(Activity context, int resource, int textViewResourceId, Integer[] objects) {
-		super(context, resource, textViewResourceId, objects);
+	public BaseImageAdapter(Activity context, int resource, int imageViewResourceId, Integer[] objects) {
+		super(context, resource, imageViewResourceId, objects);
 		this.context = context;
 		this.resource = resource;
-		this.textViewResourceId = textViewResourceId;
+		this.imageViewResourceId = imageViewResourceId;
 	}
 
 	public BaseImageAdapter(Activity context, int resource, int textViewResourceId, List<Integer> objects) {
 		super(context, resource, textViewResourceId, objects);
 		this.context = context;
 		this.resource = resource;
-		this.textViewResourceId = textViewResourceId;
+		this.imageViewResourceId = textViewResourceId;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Integer iDrawable = getItem(position);
-		View rowView = convertView;
-		if (rowView == null) {
-			LayoutInflater inflater = context.getLayoutInflater();
-			rowView = inflater.inflate(resource, null);
-		}
-		if (viewBinder!=null) {
-			viewBinder.setViewValue(position, rowView);
-		}
+		return buildView(position, convertView);
+	}
 
-		ImageView ivStatus = (ImageView) rowView.findViewById(textViewResourceId);
-		ivStatus.setImageDrawable(context.getResources().getDrawable(iDrawable));
-
-		return rowView;
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return buildView(position, convertView);
 	}
 	
 	public ViewBinder getViewBinder() {
@@ -58,5 +50,22 @@ public class BaseImageAdapter extends ArrayAdapter<Integer> {
 
 	public static interface ViewBinder {
 		boolean setViewValue(int position, View view);
+	}
+
+	private View buildView(int position, View convertView) {
+		Integer iDrawable = getItem(position);
+		View rowView = convertView;
+		if (rowView == null) {
+			LayoutInflater inflater = context.getLayoutInflater();
+			rowView = inflater.inflate(resource, null);
+		}
+		if (viewBinder!=null) {
+			viewBinder.setViewValue(position, rowView);
+		}
+
+		ImageView ivStatus = (ImageView) rowView.findViewById(imageViewResourceId);
+		ivStatus.setImageDrawable(context.getResources().getDrawable(iDrawable));
+
+		return rowView;
 	}
 }
