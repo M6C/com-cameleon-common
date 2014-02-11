@@ -26,6 +26,7 @@ import com.cameleon.common.android.factory.listener.OnClickViewListener;
 public class FactoryDialog {
 
 	private static FactoryDialog instance;
+	private boolean activateTheme = false;
 
 	private FactoryDialog() {
 	}
@@ -39,24 +40,35 @@ public class FactoryDialog {
 	public Dialog buildListView(Context context, int titleId, String[] textList, final OnItemClickListener listener) {
 		//http://stackoverflow.com/questions/2874191/is-it-possible-to-create-listview-inside-dialog
 		//http://stackoverflow.com/questions/7302365/style-attributes-of-custom-styled-alertdialog
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogTheme));
+		Context ctx = context;
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogTheme);
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-		ListView modeList = new ListView(context);//new ContextThemeWrapper(context, R.style.AlertDialogList));
+		ListView modeList = new ListView(ctx);//new ContextThemeWrapper(context, R.style.AlertDialogList));
 		builder.setView(modeList);
 
-		View customTitle = View.inflate( context, R.layout.alert_dialog_title, null );
-		if (customTitle!=null) {
-			builder.setCustomTitle(customTitle);
-			TextView title = (TextView) customTitle.findViewById( R.id.alertTitle );
-			if (title!=null) {
-				title.setText(titleId);
+		if (activateTheme) {
+			View customTitle = View.inflate( context, R.layout.alert_dialog_title, null );
+			if (customTitle!=null) {
+				builder.setCustomTitle(customTitle);
+				TextView title = (TextView) customTitle.findViewById( R.id.alertTitle );
+				if (title!=null) {
+					title.setText(titleId);
+				}
 			}
 		}
 		
 		final Dialog dialog = builder.create();
-//		dialog.setTitle(titleId);
+		if (!activateTheme) {
+			dialog.setTitle(titleId);
+		}
 
-		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(new ContextThemeWrapper(context, R.style.AlertDialogItem), android.R.layout.simple_list_item_1, android.R.id.text1, textList);
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogItem);
+		}
+		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, android.R.id.text1, textList);
 		modeList.setAdapter(modeAdapter);
 
 		modeList.setOnItemClickListener(new OnItemClickListener() {
@@ -71,7 +83,11 @@ public class FactoryDialog {
 
 	public void buildOkDialog(Context context, String title, String message) {
 //		AlertDialog.Builder builder = new Builder(context);
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogTheme));
+		Context ctx = context;
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogTheme);
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setPositiveButton("OK", null);
@@ -79,7 +95,11 @@ public class FactoryDialog {
 	}
 
 	public Dialog buildOkCancelDialog(Context context, OnClickListener onClickOkListener, int titleId, int messageId) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogTheme));
+		Context ctx = context;
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogTheme);
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle(titleId);
 		builder.setMessage(messageId);
 		builder.setPositiveButton("OK", onClickOkListener);
@@ -88,7 +108,11 @@ public class FactoryDialog {
 	}
 
 	public Dialog buildYesNoDialog(Context context, OnClickListener onClickListener, int titleId, int messageId) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogTheme));
+		Context ctx = context;
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogTheme);
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle(titleId);
 		builder.setMessage(messageId);
 		builder.setNegativeButton("No", onClickListener);
@@ -140,7 +164,11 @@ public class FactoryDialog {
 	}
 
 	private Dialog buildViewDialog(Context context, final OnClickViewListener onClickOkListener, final OnClickViewListener onClickCancelListener, View layout, final View view, int titleId) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		Context ctx = context;
+		if (activateTheme) {
+			ctx = new ContextThemeWrapper(context, R.style.AlertDialogTheme);
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		if (titleId>0) {
 			builder.setTitle(titleId);
 		}
