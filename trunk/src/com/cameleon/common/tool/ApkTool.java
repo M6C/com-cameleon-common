@@ -45,4 +45,18 @@ public class ApkTool {
 		}
 		return ret;
 	}
+	
+	public synchronized String querySourceDir(String packageNameFilter) throws IOException {
+		String ret = null;
+		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		final List<ResolveInfo> pkgAppsList = mContext.getPackageManager().queryIntentActivities(mainIntent, 0);
+		for (ResolveInfo info : pkgAppsList) {
+			if (packageNameFilter==null || packageNameFilter.equals(info.activityInfo.packageName)) {
+				ret = info.activityInfo.applicationInfo.publicSourceDir;
+				break;
+			}
+		}
+		return ret;
+	}
 }
