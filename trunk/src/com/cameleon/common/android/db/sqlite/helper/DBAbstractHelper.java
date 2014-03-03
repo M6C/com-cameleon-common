@@ -51,6 +51,18 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/**
+	 * Return the table name
+	 * @return
+	 */
+	protected abstract String getTableName();
+
+	/**
+	 * Return the class tag name for logs 
+	 * @return
+	 */
+	protected abstract String getTag();
+
 	public void backupDbToSdcard() throws IOException {
 		backupDbToSdcard(databaseName);
 	}
@@ -123,6 +135,22 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
         	notificationMessage.notifyMessage("sdcard database do not exist");
         }
 	}
+
+	public void recreateTable(SQLiteDatabase database) {
+		dropTable(database);
+		onCreate(database);
+	}
+
+	protected void dropTable(SQLiteDatabase database) {
+        notificationMessage.notifyMessage("drop database:" + database.getPath());
+
+        database.execSQL("DROP TABLE IF EXISTS " + getTableName());
+	}
+	
+	protected String getPackagename() {
+		return PACKAGE_NAME;
+	}
+
 	private void copyDb(File currentDB, File backupDB) {
 		try {
             FileChannel src = null, dst = null;
@@ -143,33 +171,6 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
 	    	notificationMessage.notifyError(ex);
 	    }
 	}
-
-	public void recreateTable(SQLiteDatabase database) {
-		dropTable(database);
-		onCreate(database);
-	}
-
-	private void dropTable(SQLiteDatabase database) {
-        notificationMessage.notifyMessage("drop database:" + database.getPath());
-
-        database.execSQL("DROP TABLE IF EXISTS " + getTableName());
-	}
-	
-	protected String getPackagename() {
-		return PACKAGE_NAME;
-	}
-
-	/**
-	 * Return the table name
-	 * @return
-	 */
-	protected abstract String getTableName();
-
-	/**
-	 * Return the class tag name for logs 
-	 * @return
-	 */
-	protected abstract String getTag();
 
 	protected void logMe(String msg) {
 		Logger.logMe(getTag(), msg);
