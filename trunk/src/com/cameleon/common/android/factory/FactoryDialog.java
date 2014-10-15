@@ -61,7 +61,7 @@ public class FactoryDialog {
 		}
 		
 		final Dialog dialog = builder.create();
-		if (!activateTheme) {
+		if (!activateTheme && titleId > 0) {
 			dialog.setTitle(titleId);
 		}
 
