@@ -24,10 +24,11 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
 	protected String databaseName;
 	protected int databaseVersion;
 	protected INotifierMessage notificationMessage;
+	protected Context context;
 
 	public DBAbstractHelper(Context context, String databaseName, CursorFactory cursorFactory, int databaseVersion, INotifierMessage notificationMessage) {
 		super(context, databaseName, cursorFactory, databaseVersion);
-
+		this.context = context;
 		this.databaseName = databaseName;
 		this.databaseVersion = databaseVersion;
 		this.notificationMessage = notificationMessage;
