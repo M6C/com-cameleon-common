@@ -120,6 +120,13 @@ public class FactoryDialog {
 		return builder.create();
 	}
 
+	public Dialog buildLayoutDialog(Context context, final OnClickViewListener onClickOkListener, final OnClickViewListener onClickCancelListener, int titleId, int layoutId, int viewId) {
+		LayoutInflater service = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = service.inflate(layoutId, null, true);
+		View view = layout.findViewById(viewId);
+
+		return buildViewDialog(context, onClickOkListener, onClickCancelListener, layout, view, titleId);
+	}
 		
 	public Dialog buildEditTextDialog(Context context, final OnClickViewListener onClickOkListener, int titleId, String text) {
 		return buildEditTextDialog(context, onClickOkListener, null, titleId, text);
