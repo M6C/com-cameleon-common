@@ -93,7 +93,6 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
 
         if (sd.canWrite()) {
     		String packageNames = getPackagename();
-            String backupDBPath = "/" + packageNames + "/" + database;
 
             File dir = new File(sd, packageNames);
         	if (!dir.exists() && !dir.mkdirs()) {
@@ -101,7 +100,7 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
         	}
 
 	        File currentDB = new File(this.getWritableDatabase().getPath());
-	        File backupDB = new File(sd, backupDBPath);
+        	File backupDB = getBackupFile();
 	
 	        copyDb(currentDB, backupDB);
         }
@@ -111,22 +110,11 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
 	}
 
 	public void restoreDbFromSdcard() throws IOException {
-		String packageNames = getPackagename();
-		String database = databaseName;
-        String backupDBPath = "/" + packageNames + "/" + database;
-
         File sd = Environment.getExternalStorageDirectory();
-        File backupDB = new File(sd, backupDBPath);
         if (sd.exists()) {
-
         	if (sd.canRead()) {
-		        File currentDB = new File(this.getWritableDatabase().getPath());
-		        if (currentDB.canWrite()) {
-			        copyDb(backupDB, currentDB);
-		        }
-		        else {
-		        	notificationMessage.notifyMessage("current database is not writable");
-		        }
+        		File backupDB = getBackupFile();
+        		restoreDbFromFile(backupDB);
             }
             else {
             	notificationMessage.notifyMessage("sdcard database can not be read");
@@ -137,9 +125,41 @@ public abstract class DBAbstractHelper extends SQLiteOpenHelper {
         }
 	}
 
+	public void restoreDbFromFile(File file) throws IOException {
+        File currentDB = new File(this.getWritableDatabase().getPath());
+        if (currentDB.canWrite()) {
+	        copyDb(file, currentDB);
+        }
+        else {
+        	notificationMessage.notifyMessage("current database is not writable");
+        }
+	}
+
 	public void recreateTable(SQLiteDatabase database) {
 		dropTable(database);
 		onCreate(database);
+	}
+
+	public File getBackupFile() {
+		String packageNames = getPackagename();
+		String database = databaseName;
+		String backupPath = "/" + packageNames + "/" + database;
+
+        File sd = Environment.getExternalStorageDirectory();
+        return new File(sd, backupPath);
+	}
+
+	public boolean isSameDB(File file) {
+		boolean ret = false;
+		if (file != null) {
+			String path = file.getAbsolutePath();
+			int idx = path.indexOf(File.separatorChar);
+			if (idx >= 0) {
+				path = path.substring(idx + 1);
+			}
+			ret = (path.equalsIgnoreCase(databaseName));
+		}
+		return ret;
 	}
 
 	protected void dropTable(SQLiteDatabase database) {

@@ -45,6 +45,17 @@ public class DbTool {
 		return cursor.getString(i);
 	}
 
+	public Boolean toBoolean(Cursor cursor, int i) {
+		return toBoolean(cursor, i, null);
+	}
+
+	public Boolean toBoolean(Cursor cursor, int i, Boolean valueIfNull) {
+		if (cursor.isNull(i)) {
+			return valueIfNull;
+		}
+		return Boolean.valueOf(cursor.getString(i));
+	}
+
 	public Object toOnject(Cursor cursor, int i) {
 		if (!cursor.isNull(i)) {
 			int type = cursor.getType(i);
