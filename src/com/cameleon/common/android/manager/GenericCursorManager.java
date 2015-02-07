@@ -4,17 +4,44 @@ import java.util.List;
 
 import org.gdocument.gtracergps.launcher.log.Logger;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 
+import com.cameleon.common.android.db.sqlite.helper.GenericDBHelper;
 import com.cameleon.common.android.mapper.GenericMapper;
 import com.cameleon.common.android.model.GenericDBPojo;
 
 public abstract class GenericCursorManager<T extends GenericDBPojo<Long>, M extends GenericMapper<T>> {
 
 	private final static String TAG = GenericCursorManager.class.getSimpleName();
+
+	protected abstract CursorLoader buildCursorLoader(Context context, String where, String[] whereParameters);
+	protected abstract M getMapper();
+
+	public List<T> getListExcept(Context context, List<T> listTExclude) {
+	    String where = buildWhereNotIn(listTExclude); 
+	    String[] whereParameters = null;
+		return getList(context, where, whereParameters);
+	}
+
+	public List<T> getList(Context context) {
+	    String where = null;
+	    String[] whereParameters = null;
+		return getList(context, where, whereParameters);
+	}
+
+
+	protected T get(Context context, String columnNameId, String columnNameMimeType, long id, String mimeType) {
+		T ret = null;
+	    String where = columnNameId + " = ? AND " + columnNameMimeType + " = ?"; 
+	    String[] whereParameters = new String[]{Long.toString(id), mimeType};
+		List<T> list = getList(context, where, whereParameters);
+		if (list!=null && list.size()>0) {
+			ret = list.get(0);
+		}
+		return ret;
+	}
 
 	protected List<T> getList(Context context, String where, String[] whereParameters) {
 		// Run query
@@ -38,8 +65,37 @@ public abstract class GenericCursorManager<T extends GenericDBPojo<Long>, M exte
 		return ret;
 	}
 
-	protected abstract CursorLoader buildCursorLoader(Context context, String where, String[] whereParameters);
-	protected abstract M getMapper();
+	protected String buildWhereNotIn(List<T> list) {
+		return buildWhereNotIn(list, GenericDBHelper.COLUMN_ID);
+	}
+
+	protected <E extends GenericDBPojo<Long>> String buildWhereNotIn(List<E> list, String columnName) {
+		return buildWhere(list, columnName, " NOT IN (", ")", ",");
+	}
+
+	protected String buildWhereIn(List<T> list) {
+		return buildWhereIn(list, GenericDBHelper.COLUMN_ID);
+	}
+
+	protected <E extends GenericDBPojo<Long>> String buildWhereIn(List<E> list, String columnName) {
+		return buildWhere(list, columnName, " IN (", ")", ",");
+	}
+
+	protected <E extends GenericDBPojo<Long>> String buildWhere(List<E> list, String columnName, String clauseBengin, String clauseEnd, String dataSeparator) {
+		String ret = null;
+		if (list != null && list.size() > 0) {
+			for(E sms : list) {
+				if (ret == null) {
+					ret = columnName + clauseBengin;
+				} else {
+					ret += dataSeparator;
+				}
+				ret += sms.getId().toString();
+			}
+			ret += clauseEnd;
+		}
+		return ret;
+	}
 
 	protected boolean showLogTrace() {
 		return false;

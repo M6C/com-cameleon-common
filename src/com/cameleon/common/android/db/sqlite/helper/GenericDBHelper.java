@@ -3,12 +3,10 @@ package com.cameleon.common.android.db.sqlite.helper;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.cameleon.common.android.db.sqlite.helper.DBAbstractHelper;
 import com.cameleon.common.android.inotifier.INotifierMessage;
 
 public abstract class GenericDBHelper extends DBAbstractHelper {
 
-	private static final String PACKAGE_NAME = "com.justtennis";
 	public static final String COLUMN_ID = "_id";
 
 	public GenericDBHelper(Context context, INotifierMessage notificationMessage, String databaseName, int databaseVersion) {
@@ -22,11 +20,6 @@ public abstract class GenericDBHelper extends DBAbstractHelper {
 		}
 
         database.execSQL(getDatabaseCreate());
-	}
-	
-	@Override
-	protected String getPackagename() {
-		return PACKAGE_NAME;
 	}
 	
 //	@Override
