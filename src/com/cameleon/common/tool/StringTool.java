@@ -9,9 +9,16 @@ public class StringTool {
 	private static StringTool instance = null;
 
 	private StringTool() {
-
 	}
 
+	public static StringTool getInstance() {
+		if (instance == null) {
+			instance = new StringTool();
+		}
+		return instance;
+	}
+
+	@Deprecated
 	public static StringTool getInstance(Context context) {
 		if (instance == null) {
 			instance = new StringTool();
@@ -37,5 +44,9 @@ public class StringTool {
 		} else {
 			return false;
 		}
+	}
+
+	public boolean isEmpty(String str) {
+		return str == null || "".equals(str);
 	}
 }
