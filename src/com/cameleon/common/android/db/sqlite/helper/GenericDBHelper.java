@@ -59,4 +59,16 @@ public abstract class GenericDBHelper extends DBAbstractHelper {
 		database.execSQL(sql);
 		logMe("execSQL: '" + sql + "' AFTER");
 	}
+
+	/**
+	 *  Create Other Table in same Database
+	 *  @param database
+	 */
+	protected void createOtherTable(SQLiteDatabase database, GenericDBHelper[] allHelper) {
+		for(GenericDBHelper helper : allHelper) {
+			if (helper.getDatabaseName().equals(getDatabaseName()) && !helper.getTableName().equals(getTableName())) {
+		        database.execSQL(helper.getDatabaseCreate());
+			}
+		}
+	}
 }
